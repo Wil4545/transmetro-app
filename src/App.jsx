@@ -12,6 +12,7 @@ import Alertas from './pages/Alertas'
 import Reportes from './pages/Reportes'
 import Layout from './components/Layout'
 import Municipalidades from './pages/Municipalidades'
+import Parqueos from './pages/Parqueos'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -34,6 +35,7 @@ function App() {
         <Route path="/alertas" element={<Alertas />} />
         <Route path="/reportes" element={<Reportes />} />
 	<Route path="/municipalidades" element={<Municipalidades />} />
+	<Route path="/parqueos" element={<Parqueos />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

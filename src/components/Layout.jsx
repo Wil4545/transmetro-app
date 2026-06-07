@@ -12,6 +12,7 @@ const navItems = [
   { path: '/alertas', label: 'Alertas', icon: '🔔' },
   { path: '/reportes', label: 'Reportes', icon: '📈' },
   { path: '/municipalidades', label: 'Municipalidades', icon: '🏛️' },
+  { path: '/parqueos', label: 'Parqueos', icon: '🅿️' },
 ]
 
 export default function Layout() {

@@ -1,83 +1,64 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
-export default function Lineas() {
-  const [lineas, setLineas] = useState([])
+export default function Parqueos() {
+  const [parqueos, setParqueos] = useState([])
   const [municipalidades, setMunicipalidades] = useState([])
-  const [form, setForm] = useState({ codigo: '', nombre: '', distancia_total_km: '', municipalidad_id: '' })
+  const [form, setForm] = useState({ nombre: '', direccion: '', municipalidad_id: '' })
   const [editando, setEditando] = useState(null)
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => { cargar() }, [])
 
   async function cargar() {
-    const [{ data: l }, { data: m }] = await Promise.all([
-      supabase.from('lineas').select('*, municipalidades(nombre)').order('codigo'),
+    const [{ data: p }, { data: m }] = await Promise.all([
+      supabase.from('parqueos').select('*, municipalidades(nombre)').order('nombre'),
       supabase.from('municipalidades').select('*').order('nombre')
     ])
-    setLineas(l ?? [])
+    setParqueos(p ?? [])
     setMunicipalidades(m ?? [])
     setCargando(false)
   }
 
   async function guardar() {
-    if (!form.codigo.trim() || !form.nombre.trim() || !form.municipalidad_id) return
-    const payload = {
-      codigo: form.codigo,
-      nombre: form.nombre,
-      municipalidad_id: form.municipalidad_id,
-      distancia_total_km: form.distancia_total_km ? parseFloat(form.distancia_total_km) : null
-    }
+    if (!form.nombre.trim() || !form.municipalidad_id) return
     if (editando) {
-      await supabase.from('lineas').update(payload).eq('id', editando)
+      await supabase.from('parqueos').update(form).eq('id', editando)
     } else {
-      await supabase.from('lineas').insert(payload)
+      await supabase.from('parqueos').insert(form)
     }
-    cancelar()
+    setForm({ nombre: '', direccion: '', municipalidad_id: '' })
+    setEditando(null)
     cargar()
   }
 
   async function eliminar(id) {
-    if (!confirm('¿Eliminar esta línea?')) return
-    await supabase.from('lineas').delete().eq('id', id)
+    if (!confirm('¿Eliminar este parqueo?')) return
+    await supabase.from('parqueos').delete().eq('id', id)
     cargar()
   }
 
-  function iniciarEdicion(l) {
-    setEditando(l.id)
-    setForm({
-      codigo: l.codigo,
-      nombre: l.nombre,
-      distancia_total_km: l.distancia_total_km ?? '',
-      municipalidad_id: l.municipalidad_id
-    })
+  function iniciarEdicion(p) {
+    setEditando(p.id)
+    setForm({ nombre: p.nombre, direccion: p.direccion ?? '', municipalidad_id: p.municipalidad_id })
   }
 
   function cancelar() {
     setEditando(null)
-    setForm({ codigo: '', nombre: '', distancia_total_km: '', municipalidad_id: '' })
+    setForm({ nombre: '', direccion: '', municipalidad_id: '' })
   }
 
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>Líneas</h1>
+      <h1 style={styles.title}>Parqueos</h1>
       <div style={styles.card}>
-        <h2 style={styles.subtitle}>{editando ? 'Editar línea' : 'Nueva línea'}</h2>
+        <h2 style={styles.subtitle}>{editando ? 'Editar parqueo' : 'Nuevo parqueo'}</h2>
         <div style={styles.formGrid}>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Código</label>
-            <input
-              style={styles.input}
-              placeholder="Ej: L1"
-              value={form.codigo}
-              onChange={e => setForm({ ...form, codigo: e.target.value })}
-            />
-          </div>
           <div style={styles.formGroup}>
             <label style={styles.label}>Nombre</label>
             <input
               style={styles.input}
-              placeholder="Ej: Línea 1 — Centro"
+              placeholder="Ej: Parqueo Central A"
               value={form.nombre}
               onChange={e => setForm({ ...form, nombre: e.target.value })}
             />
@@ -96,14 +77,12 @@ export default function Lineas() {
             </select>
           </div>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Distancia total (km)</label>
+            <label style={styles.label}>Dirección</label>
             <input
               style={styles.input}
-              type="number"
-              step="0.01"
-              placeholder="Ej: 14.5"
-              value={form.distancia_total_km}
-              onChange={e => setForm({ ...form, distancia_total_km: e.target.value })}
+              placeholder="Dirección del parqueo"
+              value={form.direccion}
+              onChange={e => setForm({ ...form, direccion: e.target.value })}
             />
           </div>
         </div>
@@ -119,31 +98,27 @@ export default function Lineas() {
       <div style={styles.card}>
         {cargando ? (
           <p style={styles.muted}>Cargando...</p>
-        ) : lineas.length === 0 ? (
-          <p style={styles.muted}>No hay líneas registradas.</p>
+        ) : parqueos.length === 0 ? (
+          <p style={styles.muted}>No hay parqueos registrados.</p>
         ) : (
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Código</th>
                 <th style={styles.th}>Nombre</th>
+                <th style={styles.th}>Dirección</th>
                 <th style={styles.th}>Municipalidad</th>
-                <th style={styles.th}>Distancia total</th>
                 <th style={styles.th}>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {lineas.map(l => (
-                <tr key={l.id}>
+              {parqueos.map(p => (
+                <tr key={p.id}>
+                  <td style={styles.td}>{p.nombre}</td>
+                  <td style={styles.td}>{p.direccion ?? '—'}</td>
+                  <td style={styles.td}>{p.municipalidades?.nombre ?? '—'}</td>
                   <td style={styles.td}>
-                    <span style={styles.badge}>{l.codigo}</span>
-                  </td>
-                  <td style={styles.td}>{l.nombre}</td>
-                  <td style={styles.td}>{l.municipalidades?.nombre ?? '—'}</td>
-                  <td style={styles.td}>{l.distancia_total_km ? `${l.distancia_total_km} km` : '—'}</td>
-                  <td style={styles.td}>
-                    <button style={styles.btnSmall} onClick={() => iniciarEdicion(l)}>Editar</button>
-                    <button style={{ ...styles.btnSmall, ...styles.btnDanger }} onClick={() => eliminar(l.id)}>Eliminar</button>
+                    <button style={styles.btnSmall} onClick={() => iniciarEdicion(p)}>Editar</button>
+                    <button style={{ ...styles.btnSmall, ...styles.btnDanger }} onClick={() => eliminar(p.id)}>Eliminar</button>
                   </td>
                 </tr>
               ))}
@@ -160,7 +135,7 @@ const styles = {
   title: { fontSize: 20, fontWeight: 500, color: '#1a2e4a', marginBottom: 16 },
   subtitle: { fontSize: 14, fontWeight: 500, color: '#1a2e4a', marginBottom: 14 },
   card: { background: '#fff', borderRadius: 10, border: '1px solid #dde3ec', padding: 16, marginBottom: 16 },
-  formGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 },
+  formGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 },
   formGroup: { display: 'flex', flexDirection: 'column', gap: 5 },
   label: { fontSize: 12, fontWeight: 500, color: '#5a6a7e' },
   input: { padding: '8px 12px', borderRadius: 7, border: '1px solid #dde3ec', fontSize: 13, color: '#1a2e4a' },
@@ -173,5 +148,4 @@ const styles = {
   th: { padding: '8px 12px', fontSize: 11, fontWeight: 500, color: '#5a6a7e', textAlign: 'left', borderBottom: '1px solid #dde3ec', textTransform: 'uppercase' },
   td: { padding: '10px 12px', fontSize: 13, color: '#1a2e4a', borderBottom: '1px solid #f4f6f9' },
   muted: { fontSize: 13, color: '#5a6a7e' },
-  badge: { background: '#e8eef6', color: '#1a2e4a', padding: '2px 8px', borderRadius: 10, fontSize: 12, fontWeight: 500 },
 }
