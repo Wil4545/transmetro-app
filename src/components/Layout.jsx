@@ -77,15 +77,20 @@ const styles = {
   shell: {
     display: 'flex',
     height: '100vh',
+    width: '100vw',
     background: '#f4f6f9',
     fontFamily: 'system-ui, sans-serif',
+    overflow: 'hidden',
   },
   sidebar: {
     width: 220,
+    minWidth: 220,
     background: '#1a2e4a',
     display: 'flex',
     flexDirection: 'column',
     flexShrink: 0,
+    height: '100vh',
+    overflowY: 'auto',
   },
   logoArea: {
     display: 'flex',
@@ -93,6 +98,7 @@ const styles = {
     gap: 10,
     padding: '20px 16px',
     borderBottom: '1px solid rgba(255,255,255,0.08)',
+    flexShrink: 0,
   },
   logoIcon: {
     width: 36,
@@ -103,6 +109,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 18,
+    flexShrink: 0,
   },
   logoText: { fontSize: 14, fontWeight: 500, color: '#fff' },
   logoSub: { fontSize: 11, color: 'rgba(255,255,255,0.45)' },
@@ -127,6 +134,7 @@ const styles = {
     cursor: 'pointer',
     width: '100%',
     textAlign: 'left',
+    flexShrink: 0,
   },
   navItemActive: {
     background: 'rgba(57,255,20,0.15)',
@@ -135,6 +143,7 @@ const styles = {
   sidebarBottom: {
     padding: '12px 8px',
     borderTop: '1px solid rgba(255,255,255,0.08)',
+    flexShrink: 0,
   },
   userInfo: {
     display: 'flex',
@@ -168,5 +177,12 @@ const styles = {
     cursor: 'pointer',
     textAlign: 'left',
     borderRadius: 7,
+  },
+  main: {
+    flex: 1,
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    background: '#f4f6f9',
+    minWidth: 0,
   },
 }
