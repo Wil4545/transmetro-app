@@ -13,6 +13,7 @@ import Reportes from './pages/Reportes'
 import Layout from './components/Layout'
 import Municipalidades from './pages/Municipalidades'
 import Parqueos from './pages/Parqueos'
+import Accesos from './pages/Accesos'
 
 function RutaProtegida({ children }) {
   const { user, loading } = useAuth()
@@ -36,6 +37,7 @@ function App() {
         <Route path="/reportes" element={<Reportes />} />
 	<Route path="/municipalidades" element={<Municipalidades />} />
 	<Route path="/parqueos" element={<Parqueos />} />
+	<Route path="/accesos" element={<Accesos />} />
       </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

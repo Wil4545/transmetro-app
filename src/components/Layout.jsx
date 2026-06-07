@@ -13,6 +13,7 @@ const navItems = [
   { path: '/reportes', label: 'Reportes', icon: '📈' },
   { path: '/municipalidades', label: 'Municipalidades', icon: '🏛️' },
   { path: '/parqueos', label: 'Parqueos', icon: '🅿️' },
+  { path: '/accesos', label: 'Accesos', icon: '🚪' },
 ]
 
 export default function Layout() {
